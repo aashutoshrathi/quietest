@@ -49,6 +49,10 @@ Settings sync with your Chrome profile, and open PR tabs update at once.
 
 ![Quietest settings](docs/settings.png)
 
+## Privacy 🔒
+
+Quietest does not collect or send any data. Your rules stay in your browser. See the [privacy policy](privacy-policy.html).
+
 ### Development 🛠️
 
 1. Download or clone this repository to your local machine
