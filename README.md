@@ -14,7 +14,9 @@ It uses the same filter as T3 Code's "Hide test files" (`classifyChangedFile` in
 
 ## Installation 🚀
 
-Coming soon to the Chrome Web Store.
+[link-chrome]: https://chromewebstore.google.com/detail/jdnknkmpcknkhnelmoofpmdkjijkfmad 'Version published on Chrome Web Store'
+
+[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/jdnknkmpcknkhnelmoofpmdkjijkfmad.svg?label=%20">][link-chrome] and other Chromium browsers
 
 ### Install from the latest release 📦
 
