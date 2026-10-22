@@ -5,8 +5,10 @@ const DIFF_HREF = /#diff-([0-9a-f]{64})$/;
 const TOGGLE_ID = "quietest-toggle";
 
 const hashByPath = new Map();
+const hiddenByPath = new Map();
 let reviewKey = null;
 let scanQueued = false;
+let scanGeneration = 0;
 let hideRules = null;
 
 async function sha256Hex(text) {
@@ -19,46 +21,86 @@ function syncReviewKey() {
   const key = match ? match[1] : null;
   if (key !== reviewKey) {
     reviewKey = key;
+    hashByPath.clear();
+    hiddenByPath.clear();
     document.documentElement.classList.remove(SHOW_CLASS);
   }
   return key;
 }
 
-function candidatePaths() {
+function diffLinks() {
+  return [...document.querySelectorAll('a[href*="#diff-"]')]
+    .map((link) => ({ link, hash: link.getAttribute("href").match(DIFF_HREF)?.[1] }))
+    .filter(({ hash }) => hash);
+}
+
+function candidatePaths(links) {
   const paths = new Set();
   for (const el of document.querySelectorAll("[data-path], [data-file-path], [data-tagsearch-path]")) {
     paths.add(el.dataset.path || el.dataset.filePath || el.dataset.tagsearchPath);
   }
-  for (const link of document.querySelectorAll('a[href*="#diff-"]')) {
-    if (DIFF_HREF.test(link.getAttribute("href"))) {
-      paths.add(link.textContent.replace(/[‎‏]/g, "").trim());
-    }
+  for (const { link } of links) {
+    paths.add(link.textContent.replace(/[‎‏]/g, "").trim());
   }
   for (const item of document.querySelectorAll('[role="treeitem"][id]')) {
     paths.add(item.id);
   }
-  paths.delete("");
-  paths.delete(undefined);
-  return paths;
+  return [...paths].filter((path) => path && path.length <= MAX_PATH_LENGTH);
 }
 
-function testElements(path, hash) {
-  const elements = [
+function isHiddenPath(path) {
+  if (!hiddenByPath.has(path)) {
+    hiddenByPath.set(path, Boolean(matchingRule(path, hideRules)));
+  }
+  return hiddenByPath.get(path);
+}
+
+function treeItemsByHash(links) {
+  const items = new Map();
+  for (const { link, hash } of links) {
+    const item = link.closest('[role="treeitem"]');
+    if (item) {
+      items.set(hash, [...(items.get(hash) ?? []), item]);
+    }
+  }
+  return items;
+}
+
+function testElements(path, hash, treeItems) {
+  return [
     document.getElementById(`diff-${hash}`),
     document.getElementById(`file-tree-item-diff-${hash}`),
     document.getElementById(path)?.closest('[role="treeitem"]'),
-  ];
-  for (const link of document.querySelectorAll(`a[href$="#diff-${hash}"]`)) {
-    elements.push(link.closest('[role="treeitem"]'));
-  }
-  return elements.filter(Boolean);
+    ...(treeItems.get(hash) ?? []),
+  ].filter(Boolean);
 }
 
-function markEmptyDirectories() {
-  for (const dir of document.querySelectorAll('[role="treeitem"]:has([role="treeitem"])')) {
-    const files = [...dir.querySelectorAll('[role="treeitem"]:not(:has([role="treeitem"]))')];
-    if (files.every((file) => file.hasAttribute(TEST_ATTR))) {
-      dir.setAttribute(TEST_ATTR, "");
+function addEmptyDirectories(marked) {
+  const parents = new Set();
+  const parentsWithVisibleChild = new Set();
+  for (const item of [...document.querySelectorAll('[role="treeitem"]')].reverse()) {
+    if (parents.has(item) && !parentsWithVisibleChild.has(item)) {
+      marked.add(item);
+    }
+    const parent = item.parentElement?.closest('[role="treeitem"]');
+    if (parent) {
+      parents.add(parent);
+      if (!marked.has(item)) {
+        parentsWithVisibleChild.add(parent);
+      }
+    }
+  }
+}
+
+function applyMarks(marked) {
+  for (const el of document.querySelectorAll(`[${TEST_ATTR}]`)) {
+    if (!marked.has(el)) {
+      el.removeAttribute(TEST_ATTR);
+    }
+  }
+  for (const el of marked) {
+    if (!el.hasAttribute(TEST_ATTR)) {
+      el.setAttribute(TEST_ATTR, "");
     }
   }
 }
@@ -116,8 +158,18 @@ function renderToggle(hiddenCount) {
   }
 }
 
+function stopAfterExtensionUpdate() {
+  observer.disconnect();
+  applyMarks(new Set());
+  document.getElementById(TOGGLE_ID)?.remove();
+}
+
 async function scan() {
   scanQueued = false;
+  if (!chrome.runtime?.id) {
+    stopAfterExtensionUpdate();
+    return;
+  }
   if (!hideRules) {
     return;
   }
@@ -125,27 +177,31 @@ async function scan() {
     document.getElementById(TOGGLE_ID)?.remove();
     return;
   }
-  const testPaths = [...candidatePaths()].filter((path) => matchingRule(path, hideRules));
-  for (const path of testPaths) {
-    if (!hashByPath.has(path)) {
-      hashByPath.set(path, await sha256Hex(path));
+  const generation = ++scanGeneration;
+  const hiddenPaths = candidatePaths(diffLinks()).filter(isHiddenPath);
+  const unhashedPaths = hiddenPaths.filter((path) => !hashByPath.has(path));
+  if (unhashedPaths.length > 0) {
+    const hashes = await Promise.all(unhashedPaths.map(sha256Hex));
+    if (generation !== scanGeneration) {
+      return;
     }
+    unhashedPaths.forEach((path, index) => hashByPath.set(path, hashes[index]));
   }
 
-  for (const el of document.querySelectorAll(`[${TEST_ATTR}]`)) {
-    el.removeAttribute(TEST_ATTR);
-  }
+  const treeItems = treeItemsByHash(diffLinks());
+  const marked = new Set();
   let hiddenCount = 0;
-  for (const path of testPaths) {
-    const elements = testElements(path, hashByPath.get(path));
+  for (const path of hiddenPaths) {
+    const elements = testElements(path, hashByPath.get(path), treeItems);
     for (const el of elements) {
-      el.setAttribute(TEST_ATTR, "");
+      marked.add(el);
     }
     if (elements.length > 0) {
       hiddenCount += 1;
     }
   }
-  markEmptyDirectories();
+  addEmptyDirectories(marked);
+  applyMarks(marked);
   renderToggle(hiddenCount);
 }
 
@@ -159,9 +215,12 @@ function queueScan() {
 
 async function refreshRules() {
   hideRules = activeRules(await loadSettings());
+  hiddenByPath.clear();
+  scanGeneration += 1;
   queueScan();
 }
 
+const observer = new MutationObserver(queueScan);
 chrome.storage.onChanged.addListener(refreshRules);
-new MutationObserver(queueScan).observe(document.documentElement, { childList: true, subtree: true });
+observer.observe(document.documentElement, { childList: true, subtree: true });
 refreshRules();

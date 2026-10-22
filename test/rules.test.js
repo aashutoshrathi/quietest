@@ -60,3 +60,28 @@ test("applies enabled custom rules, ignoring case", () => {
   assert.equal(isHidden("src/Button.STORIES.tsx", settings), true);
   assert.equal(isHidden("docs/intro.md", settings), false);
 });
+
+test("skips invalid stored regexes instead of failing", () => {
+  const settings = {
+    disabledRuleIds: [],
+    customRules: [
+      { id: "a", pattern: "([a-", enabled: true },
+      { id: "b", pattern: "^docs/", enabled: true },
+    ],
+  };
+  assert.equal(isHidden("docs/intro.md", settings), true);
+  assert.equal(isHidden("src/app.test.ts", settings), true);
+});
+
+test("loads broken stored settings as empty", async () => {
+  const source = fs.readFileSync(path.join(__dirname, "../src/rules.js"), "utf8");
+  const stored = {
+    disabledRuleIds: "test-files",
+    customRules: [{ id: "a", pattern: "x".repeat(301), enabled: true }, { id: "b", enabled: true }, null, { id: "c", pattern: "^docs/", enabled: true }],
+  };
+  const chrome = { storage: { sync: { get: async () => stored } } };
+  const { loadSettings } = vm.runInNewContext(`${source}; ({ loadSettings })`, { chrome });
+  const settings = await loadSettings();
+  assert.equal(settings.disabledRuleIds.length, 0);
+  assert.deepEqual(settings.customRules.map((rule) => rule.id), ["c"]);
+});

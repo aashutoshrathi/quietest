@@ -38,13 +38,27 @@ const BUILT_IN_RULES = [
 ];
 
 const CUSTOM_RULE_FLAGS = "i";
+const MAX_PATTERN_LENGTH = 300;
+const MAX_PATH_LENGTH = 1000;
+
+function isValidCustomRule(rule) {
+  return typeof rule?.pattern === "string" && rule.pattern.length <= MAX_PATTERN_LENGTH;
+}
 
 async function loadSettings() {
   const stored = await chrome.storage.sync.get(["disabledRuleIds", "customRules"]);
   return {
-    disabledRuleIds: stored.disabledRuleIds ?? [],
-    customRules: stored.customRules ?? [],
+    disabledRuleIds: Array.isArray(stored.disabledRuleIds) ? stored.disabledRuleIds : [],
+    customRules: Array.isArray(stored.customRules) ? stored.customRules.filter(isValidCustomRule) : [],
   };
+}
+
+function compileRule(rule) {
+  try {
+    return { ...rule, regex: new RegExp(rule.pattern, rule.flags) };
+  } catch {
+    return null;
+  }
 }
 
 function activeRules(settings) {
@@ -52,7 +66,7 @@ function activeRules(settings) {
   const custom = settings.customRules
     .filter((rule) => rule.enabled)
     .map((rule) => ({ ...rule, flags: CUSTOM_RULE_FLAGS }));
-  return [...builtIn, ...custom].map((rule) => ({ ...rule, regex: new RegExp(rule.pattern, rule.flags) }));
+  return [...builtIn, ...custom].map(compileRule).filter(Boolean);
 }
 
 function matchingRule(path, rules) {

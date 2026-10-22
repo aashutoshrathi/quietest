@@ -6,6 +6,15 @@ const addError = document.getElementById("add-error");
 const testInput = document.getElementById("test-path");
 const testResult = document.getElementById("test-result");
 const resetButton = document.getElementById("reset");
+const saveError = document.getElementById("save-error");
+
+const REGEX_TIME_LIMIT_MS = 250;
+const SLOW_REGEX_SAMPLES = [..."abcdefghijklmnopqrstuvwxyz0123456789/._-"]
+  .flatMap((char) => [`${char.repeat(40)}!`, `${char.repeat(MAX_PATH_LENGTH)}!`])
+  .concat([`${"ab/".repeat(300)}!`, `${"a.b/".repeat(250)}!`]);
+
+patternInput.maxLength = MAX_PATTERN_LENGTH;
+testInput.maxLength = MAX_PATH_LENGTH;
 
 let settings = null;
 const openRuleIds = new Set();
@@ -62,14 +71,43 @@ function ruleItem({ id, enabled, title, example, pattern, onToggle, onDelete }) 
 }
 
 async function save(next) {
+  const previous = settings;
   settings = next;
-  await chrome.storage.sync.set(next);
+  try {
+    await chrome.storage.sync.set(next);
+    saveError.hidden = true;
+  } catch (error) {
+    settings = previous;
+    saveError.textContent = `Could not save your change: ${error.message}`;
+    saveError.hidden = false;
+  }
   render();
+}
+
+function isRegexFastEnough(pattern) {
+  return new Promise((resolve) => {
+    const worker = new Worker("regex-check.js");
+    let timer = null;
+    const finish = (fast) => {
+      clearTimeout(timer);
+      worker.terminate();
+      resolve(fast);
+    };
+    worker.onerror = () => finish(false);
+    worker.onmessage = ({ data }) => {
+      if (data === "done") {
+        finish(true);
+        return;
+      }
+      timer = setTimeout(() => finish(false), REGEX_TIME_LIMIT_MS);
+      worker.postMessage({ pattern, flags: CUSTOM_RULE_FLAGS, samples: SLOW_REGEX_SAMPLES });
+    };
+  });
 }
 
 function renderTestResult() {
   const path = testInput.value.trim();
-  if (!path) {
+  if (!path || !settings) {
     testResult.textContent = "";
     return;
   }
@@ -120,22 +158,29 @@ function render() {
   renderTestResult();
 }
 
-addForm.addEventListener("submit", (event) => {
+function showAddError(message) {
+  addError.textContent = message;
+  addError.hidden = false;
+}
+
+addForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const pattern = patternInput.value.trim();
-  if (!pattern) {
+  if (!pattern || !settings) {
     return;
   }
   try {
     new RegExp(pattern, CUSTOM_RULE_FLAGS);
   } catch (error) {
-    addError.textContent = error.message;
-    addError.hidden = false;
+    showAddError(error.message);
+    return;
+  }
+  if (!(await isRegexFastEnough(pattern))) {
+    showAddError("This regex is too slow and could freeze GitHub pages. Try a simpler one.");
     return;
   }
   if (settings.customRules.some((rule) => rule.pattern === pattern)) {
-    addError.textContent = "This rule already exists.";
-    addError.hidden = false;
+    showAddError("This rule already exists.");
     return;
   }
   addError.hidden = true;

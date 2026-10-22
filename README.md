@@ -41,7 +41,7 @@ Coming soon to the Chrome Web Store.
 Click the Quietest icon in the Chrome toolbar. If you do not see it, pin it from the extensions (puzzle) menu. You can also open **Details > Extension options** in `chrome://extensions`.
 
 - Turn each built-in rule on or off.
-- Add your own rules. A rule is a JavaScript regex, matched against the full file path, ignoring case. For example, `\.stories\.tsx$` or `^docs/`.
+- Add your own rules. A rule is a JavaScript regex, matched against the full file path, ignoring case. For example, `\.stories\.tsx$` or `^docs/`. A regex that is too slow to run safely on GitHub pages is rejected.
 - Type a file path in **Test a path** to see which rule hides it.
 - Describe files in plain English, like "database migrations", in **Write a rule with AI** and click the arrow. Chrome's on-device AI (Gemini Nano) writes the regex for you to review. Nothing you type leaves your computer. The first use downloads the model. If your Chrome or computer cannot run it, the page says why and links to [Chrome's requirements](https://developer.chrome.com/docs/ai/get-started).
 

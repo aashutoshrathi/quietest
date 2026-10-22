@@ -363,6 +363,10 @@ button.secondary {
   color: var(--danger);
 }
 
+.save-error {
+  margin: -16px 0 24px;
+}
+
 #test-result[data-hidden="true"] {
   color: var(--danger);
 }
