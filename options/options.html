@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Quietest settings</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main data-testid="quietest-settings">
+      <header>
+        <img src="../icons/icon.svg" width="44" height="44" alt="">
+        <div>
+          <h1>Quietest</h1>
+          <p>Files whose path matches an enabled rule are hidden on pull request diffs.</p>
+        </div>
+      </header>
+
+      <section data-testid="quietest-custom-rules">
+        <h2>Your rules</h2>
+        <ul id="custom-rules" class="rules"></ul>
+        <div id="ai-rule" class="rule-card" data-testid="quietest-ai-rule">
+          <h3>Write a rule with AI</h3>
+          <p id="ai-about" class="hint card-hint" hidden>Uses Chrome's built-in AI model (Gemini Nano). It runs on this computer, and nothing you type leaves it.</p>
+          <div id="ai-unsupported" class="ai-download" hidden>
+            <p id="ai-unsupported-reason" class="hint"></p>
+            <a href="https://developer.chrome.com/docs/ai/get-started" target="_blank" rel="noopener">See Chrome's requirements</a>
+          </div>
+          <div id="ai-download" class="ai-download" hidden>
+            <p class="hint">Chrome must first download the model, up to about 4 GB depending on your computer. It is a one-time download.</p>
+            <button id="ai-download-button" type="button" class="secondary">Download Chrome's AI model</button>
+          </div>
+          <form id="ai-form" class="ai-form" hidden>
+            <input id="ai-description" placeholder="Describe files to hide, like &quot;Storybook stories&quot;" autocomplete="off" aria-label="Describe files to hide">
+            <button id="ai-submit" type="submit" class="send-button" aria-label="Write regex with AI">
+              <svg class="send-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="spinner" aria-hidden="true"></span>
+            </button>
+          </form>
+          <p id="ai-status" class="hint" aria-live="polite"></p>
+        </div>
+
+        <div class="rule-card" data-testid="quietest-regex-rule">
+          <h3>Write a regex yourself</h3>
+          <form id="add-rule">
+            <input id="new-pattern" placeholder="^docs/ or \.stories\.tsx$" spellcheck="false" autocomplete="off" aria-label="New rule regex">
+            <button type="submit">Add rule</button>
+          </form>
+          <p id="add-error" class="error" hidden></p>
+          <p class="hint">Each rule is a JavaScript regular expression. It is matched against the full file path and ignores case.</p>
+        </div>
+      </section>
+
+      <section data-testid="quietest-built-in-rules">
+        <div class="section-header">
+          <h2>Built-in rules</h2>
+          <button id="reset" type="button" class="secondary small" title="Turn all built-in rules back on">Reset</button>
+        </div>
+        <p class="hint">The same rules as T3 Code's "Hide test files".</p>
+        <ul id="built-in-rules" class="rules"></ul>
+      </section>
+
+      <section data-testid="quietest-path-tester">
+        <h2>Test a path</h2>
+        <input id="test-path" placeholder="src/components/Button.test.tsx" spellcheck="false" autocomplete="off" aria-label="File path to test">
+        <p id="test-result" class="hint"></p>
+      </section>
+
+    </main>
+    <script src="../src/rules.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
