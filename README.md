@@ -20,16 +20,15 @@ It uses the same filter as T3 Code's "Hide test files" (`classifyChangedFile` in
 
 ### Install from the latest release 📦
 
-[link-release]: https://github.com/aashutoshrathi/quietest/releases/latest 'Latest release'
+[link-zip]: https://github.com/aashutoshrathi/quietest/releases/latest/download/quietest.zip 'Download the latest quietest.zip'
 
-[<img valign="middle" src="https://img.shields.io/github/v/release/aashutoshrathi/quietest?label=Download%20latest%20ZIP&style=for-the-badge&logo=github">][link-release]
+[<img valign="middle" src="https://img.shields.io/github/v/release/aashutoshrathi/quietest?label=Download%20latest%20ZIP&style=for-the-badge&logo=github">][link-zip]
 
-1. Download `quietest.zip` from the [latest release][link-release]
-2. Unzip it somewhere you'll keep it. Chrome loads the extension from this folder every time it starts
-3. Open Chrome and navigate to `chrome://extensions/`
-4. Enable "Developer mode" by toggling the switch in the top right corner
-5. Click "Load unpacked" and select the unzipped folder
-6. Open a PR's **Files changed** tab. Test files are now hidden
+1. Download [`quietest.zip`][link-zip] and unzip it somewhere you'll keep it. Chrome loads the extension from this folder every time it starts
+2. Open `chrome://extensions/` in a new tab and turn on **Developer mode** at the top right
+3. Click **Load unpacked** and select the unzipped folder
+
+Open a PR's **Files changed** tab. Test files are now hidden. This install does not update by itself, so download the ZIP again when a new release is out.
 
 ## Features 🌟
 

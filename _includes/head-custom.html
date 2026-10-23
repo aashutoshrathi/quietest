@@ -1,3 +1,33 @@
 <link rel="icon" type="image/svg+xml" href="{{ '/icons/icon.svg' | relative_url }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ '/icons/32.png' | relative_url }}">
 <meta name="theme-color" content="#0d1117">
+<style>
+  .copy-chrome-url {
+    margin-left: 4px;
+    padding: 2px 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    background: #f6f8fa;
+    font-size: 12px;
+    cursor: pointer;
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    for (const code of document.querySelectorAll("code")) {
+      if (code.textContent !== "chrome://extensions/") {
+        continue;
+      }
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "copy-chrome-url";
+      button.dataset.testid = "copy-chrome-url";
+      button.textContent = "Copy";
+      button.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(code.textContent);
+        button.textContent = "Copied";
+      });
+      code.after(button);
+    }
+  });
+</script>
