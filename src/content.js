@@ -66,9 +66,17 @@ function treeItemsByHash(links) {
   return items;
 }
 
+function diffEntry(hash) {
+  const diff = document.getElementById(`diff-${hash}`);
+  if (diff?.parentElement?.childElementCount === 1) {
+    return diff.parentElement;
+  }
+  return diff;
+}
+
 function testElements(path, hash, treeItems) {
   return [
-    document.getElementById(`diff-${hash}`),
+    diffEntry(hash),
     document.getElementById(`file-tree-item-diff-${hash}`),
     document.getElementById(path)?.closest('[role="treeitem"]'),
     ...(treeItems.get(hash) ?? []),
