@@ -80,9 +80,9 @@ Edit `icons/icon.svg`, then run `./scripts/build-icons.sh` to make all PNGs agai
 
 1. Bump `version` in `manifest.json`
 2. Publish a GitHub release tagged with the same version, like `v0.1.0`
-3. The **Publish** workflow checks the version, runs the tests, uploads the build to the Chrome Web Store, and attaches `quietest.zip` to the release. To retry a failed publish, run the workflow by hand with the tag
+3. The **Publish** workflow checks the version, runs the tests, attaches `quietest.zip` to the release, and then uploads the same ZIP to the Chrome Web Store. The ZIP stays on the release even if the store upload fails. To retry a failed publish, run the workflow by hand with the tag
 
-The workflow runs in the `chrome-web-store` environment and needs:
+The store upload runs in the `chrome-web-store` environment and needs:
 
 - Variable `CWS_EXTENSION_ID`: the extension's Chrome Web Store ID
 - Secrets `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN`: Chrome Web Store API credentials

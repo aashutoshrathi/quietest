@@ -14,9 +14,8 @@ env:
   TAG: ${{ github.event.release.tag_name || inputs.tag }}
 
 jobs:
-  publish:
+  package:
     runs-on: ubuntu-latest
-    environment: chrome-web-store
     permissions:
       contents: write
     steps:
@@ -45,6 +44,25 @@ jobs:
             manifest.json src options icons \
             -x '*.DS_Store'
 
+      - name: Attach ZIP to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" quietest.zip --clobber
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quietest
+          path: quietest.zip
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    environment: chrome-web-store
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: quietest
+
       - name: Upload and publish to the Chrome Web Store
         uses: puzzlers-labs/chrome-webstore-publish@010fc578dea8e3a05e15af75b836be821ee9ab74 # v1
         with:
@@ -56,11 +74,3 @@ jobs:
           refresh_token: ${{ secrets.CWS_REFRESH_TOKEN }}
           # Signs the package so it passes Verified CRX Uploads.
           crx_private_key: ${{ secrets.CRX_PRIVATE_KEY }}
-
-      # Last, so a rejected upload doesn't leave a download on the release that
-      # never reached the store. The asset is the ZIP, not the signed CRX, because
-      # the README tells people to unzip it and use "Load unpacked".
-      - name: Attach ZIP to the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$TAG" quietest.zip --clobber
