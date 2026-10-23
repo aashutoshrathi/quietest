@@ -16,7 +16,7 @@ It uses the same filter as T3 Code's "Hide test files" (`classifyChangedFile` in
 
 [link-chrome]: https://chromewebstore.google.com/detail/jdnknkmpcknkhnelmoofpmdkjijkfmad 'Version published on Chrome Web Store'
 
-[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/jdnknkmpcknkhnelmoofpmdkjijkfmad.svg?label=%20">][link-chrome] and other Chromium browsers
+[<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" width="48" alt="Chrome" valign="middle">][link-chrome] [<img valign="middle" src="https://img.shields.io/badge/Chrome_Web_Store-Install-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Install from the Chrome Web Store">][link-chrome] and other Chromium browsers
 
 ### Install from the latest release 📦
 
@@ -71,6 +71,7 @@ Edit `icons/icon.svg`, then run `./scripts/build-icons.sh` to make all PNGs agai
 
 - `icons/16.png`, `32.png`, `48.png`, `128.png`: extension icons (128 has the 16 px padding the Chrome Web Store asks for).
 - `store/promo-small.png` (440x280) and `store/promo-marquee.png` (1400x560): Chrome Web Store promo tiles.
+- `docs/og.png` (1200x630): link preview image for the website. It uses the screenshots in `docs/`, so build again after you change them.
 
 | Small promo tile | Marquee |
 |---|---|
