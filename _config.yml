@@ -1,0 +1,16 @@
+title: Quietest
+tagline: Hide test files on GitHub pull requests
+description: Mute the tests in GitHub PRs. Review the code that matters.
+url: https://quietest.aashutosh.dev
+logo: /icons/128.png
+twitter:
+  card: summary_large_image
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /docs/og.png
+  - scope:
+      path: README.md
+    values:
+      title: Quietest
