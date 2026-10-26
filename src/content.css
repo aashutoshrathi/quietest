@@ -1,4 +1,6 @@
-html:not(.quietest-show-tests) [data-quietest-test] {
+html:not([data-quietest-mode]) [data-quietest-test],
+html[data-quietest-mode="implementation"] [data-quietest-test],
+html[data-quietest-mode="tests"] [data-quietest-impl] {
   display: none !important;
 }
 
@@ -7,20 +9,27 @@ html:not(.quietest-show-tests) [data-quietest-test] {
   right: 24px;
   bottom: 24px;
   z-index: 2147483000;
+  font: 600 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#quietest-toggle[hidden] {
+  display: none;
+}
+
+.quietest-toggle__button {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
   padding: 8px;
   border: 1px solid var(--borderColor-default, #d0d7de);
   border-radius: 999px;
   background: var(--bgColor-default, #ffffff);
   color: var(--fgColor-default, #1f2328);
-  font: 600 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 
-#quietest-toggle::after {
+.quietest-toggle__button::after {
   content: attr(data-tooltip);
   position: absolute;
   right: 0;
@@ -37,13 +46,85 @@ html:not(.quietest-show-tests) [data-quietest-test] {
   transition: opacity 0.12s;
 }
 
-#quietest-toggle:hover::after,
-#quietest-toggle:focus-visible::after {
+.quietest-toggle__button:hover::after,
+.quietest-toggle__button:focus-visible::after {
   opacity: 1;
 }
 
-#quietest-toggle[hidden] {
+.quietest-toggle--open .quietest-toggle__button::after {
   display: none;
+}
+
+.quietest-toggle__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border: 2px solid var(--bgColor-default, #ffffff);
+  border-radius: 999px;
+  background: var(--bgColor-danger-emphasis, #cf222e);
+  color: var(--fgColor-onEmphasis, #ffffff);
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.quietest-toggle__badge:empty {
+  display: none;
+}
+
+.quietest-toggle__menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  display: none;
+  flex-direction: column;
+  min-width: 220px;
+  padding: 4px;
+  border: 1px solid var(--borderColor-default, #d0d7de);
+  border-radius: 12px;
+  background: var(--overlay-bgColor, var(--bgColor-default, #ffffff));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.quietest-toggle--open .quietest-toggle__menu {
+  display: flex;
+}
+
+.quietest-toggle__item {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  column-gap: 8px;
+  row-gap: 2px;
+  align-items: center;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fgColor-default, #1f2328);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.quietest-toggle__item:hover,
+.quietest-toggle__item:focus-visible {
+  background: var(--control-transparent-bgColor-hover, rgba(208, 215, 222, 0.32));
+}
+
+.quietest-toggle__item[aria-checked="true"] .quietest-toggle__check::before {
+  content: "\2713";
+  color: var(--fgColor-accent, #0969da);
+}
+
+.quietest-toggle__hint {
+  grid-column: 2;
+  color: var(--fgColor-muted, #59636e);
+  font-weight: 400;
 }
 
 #quietest-toggle svg * {
@@ -79,16 +160,17 @@ html:not(.quietest-show-tests) [data-quietest-test] {
   stroke-width: 2.5;
 }
 
-.quietest-toggle__count {
-  color: var(--fgColor-danger, #d1242f);
+#quietest-toggle .quietest-toggle__flask {
+  stroke: currentColor;
 }
 
-html.quietest-show-tests #quietest-toggle {
-  padding-right: 12px;
+#quietest-toggle .quietest-toggle__liquid {
+  stroke: var(--fgColor-success, #1a7f37);
+  stroke-width: 2.5;
 }
 
-html:not(.quietest-show-tests) .quietest-toggle__noisy,
-html:not(.quietest-show-tests) .quietest-toggle__count,
-html.quietest-show-tests .quietest-toggle__quiet {
+#quietest-toggle:not([data-mode="implementation"]) .quietest-toggle__quiet,
+#quietest-toggle:not([data-mode="tests"]) .quietest-toggle__tests,
+#quietest-toggle:not([data-mode="both"]) .quietest-toggle__noisy {
   display: none;
 }
