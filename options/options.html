@@ -63,6 +63,17 @@
         <ul id="built-in-rules" class="rules"></ul>
       </section>
 
+      <section data-testid="quietest-excluded-repos">
+        <h2>Excluded repositories</h2>
+        <p class="hint">Quietest does not hide any files on pull requests in these repositories.</p>
+        <ul id="excluded-repos" class="rules"></ul>
+        <form id="add-repo">
+          <input id="new-repo" placeholder="owner/repo or a GitHub URL" spellcheck="false" autocomplete="off" aria-label="Repository to exclude">
+          <button type="submit">Exclude</button>
+        </form>
+        <p id="add-repo-error" class="error" hidden></p>
+      </section>
+
       <section data-testid="quietest-path-tester">
         <h2>Test a path</h2>
         <input id="test-path" placeholder="src/components/Button.test.tsx" spellcheck="false" autocomplete="off" aria-label="File path to test">

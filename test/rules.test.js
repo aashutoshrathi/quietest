@@ -10,7 +10,10 @@ function load(file, names) {
 }
 
 const { classifyChangedFile } = load("t3ChangedFileKind.js", "classifyChangedFile");
-const { BUILT_IN_RULES, activeRules, matchingRule } = load("../src/rules.js", "BUILT_IN_RULES, activeRules, matchingRule");
+const { BUILT_IN_RULES, activeRules, matchingRule, normalizeRepo } = load(
+  "../src/rules.js",
+  "BUILT_IN_RULES, activeRules, matchingRule, normalizeRepo",
+);
 
 const defaults = { disabledRuleIds: [], customRules: [] };
 const isHidden = (file, settings) => Boolean(matchingRule(file, activeRules(settings)));
@@ -78,10 +81,24 @@ test("loads broken stored settings as empty", async () => {
   const stored = {
     disabledRuleIds: "test-files",
     customRules: [{ id: "a", pattern: "x".repeat(301), enabled: true }, { id: "b", enabled: true }, null, { id: "c", pattern: "^docs/", enabled: true }],
+    excludedRepos: ["owner/repo", null, 7],
   };
   const chrome = { storage: { sync: { get: async () => stored } } };
   const { loadSettings } = vm.runInNewContext(`${source}; ({ loadSettings })`, { chrome });
   const settings = await loadSettings();
   assert.equal(settings.disabledRuleIds.length, 0);
   assert.deepEqual(settings.customRules.map((rule) => rule.id), ["c"]);
+  assert.deepEqual([...settings.excludedRepos], ["owner/repo"]);
+});
+
+test("reads a repository from owner/repo or a GitHub URL", () => {
+  assert.equal(normalizeRepo(" Owner/Repo "), "owner/repo");
+  assert.equal(normalizeRepo("owner/my.repo-name"), "owner/my.repo-name");
+  assert.equal(normalizeRepo("https://github.com/Owner/Repo"), "owner/repo");
+  assert.equal(normalizeRepo("https://github.com/owner/repo/pull/12/files#diff-abc"), "owner/repo");
+  assert.equal(normalizeRepo("github.com/owner/repo.git"), "owner/repo");
+  assert.equal(normalizeRepo("git@github.com:owner/repo.git"), null);
+  assert.equal(normalizeRepo("https://gitlab.com/owner/repo"), null);
+  assert.equal(normalizeRepo("owner"), null);
+  assert.equal(normalizeRepo(""), null);
 });

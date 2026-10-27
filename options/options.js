@@ -7,6 +7,10 @@ const testInput = document.getElementById("test-path");
 const testResult = document.getElementById("test-result");
 const resetButton = document.getElementById("reset");
 const saveError = document.getElementById("save-error");
+const excludedList = document.getElementById("excluded-repos");
+const addRepoForm = document.getElementById("add-repo");
+const repoInput = document.getElementById("new-repo");
+const addRepoError = document.getElementById("add-repo-error");
 
 const REGEX_TIME_LIMIT_MS = 250;
 const SLOW_REGEX_SAMPLES = [..."abcdefghijklmnopqrstuvwxyz0123456789/._-"]
@@ -67,6 +71,21 @@ function ruleItem({ id, enabled, title, example, pattern, onToggle, onDelete }) 
     remove.addEventListener("click", onDelete);
     item.append(remove);
   }
+  return item;
+}
+
+function repoItem(repo) {
+  const item = document.createElement("li");
+  const code = document.createElement("code");
+  code.textContent = repo;
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "secondary small";
+  remove.textContent = "Remove";
+  remove.addEventListener("click", () => {
+    save({ ...settings, excludedRepos: settings.excludedRepos.filter((other) => other !== repo) });
+  });
+  item.append(code, remove);
   return item;
 }
 
@@ -155,6 +174,9 @@ function render() {
   );
   customList.hidden = settings.customRules.length === 0;
 
+  excludedList.replaceChildren(...settings.excludedRepos.map(repoItem));
+  excludedList.hidden = settings.excludedRepos.length === 0;
+
   renderTestResult();
 }
 
@@ -191,6 +213,28 @@ addForm.addEventListener("submit", async (event) => {
 
 patternInput.addEventListener("input", () => {
   addError.hidden = true;
+});
+
+addRepoForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!repoInput.value.trim() || !settings) {
+    return;
+  }
+  const repo = normalizeRepo(repoInput.value);
+  if (!repo) {
+    addRepoError.textContent = "Enter a repository as owner/repo, or paste its GitHub URL.";
+    addRepoError.hidden = false;
+    return;
+  }
+  repoInput.value = "";
+  if (settings.excludedRepos.includes(repo)) {
+    return;
+  }
+  save({ ...settings, excludedRepos: [...settings.excludedRepos, repo] });
+});
+
+repoInput.addEventListener("input", () => {
+  addRepoError.hidden = true;
 });
 
 testInput.addEventListener("input", renderTestResult);

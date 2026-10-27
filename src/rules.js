@@ -40,16 +40,23 @@ const BUILT_IN_RULES = [
 const CUSTOM_RULE_FLAGS = "i";
 const MAX_PATTERN_LENGTH = 300;
 const MAX_PATH_LENGTH = 1000;
+const REPO_INPUT = /^(?:(?:https?:\/\/)?(?:www\.)?github\.com\/)?([\w.-]+)\/([\w.-]+?)(?:\.git)?(?:[/?#].*)?$/i;
 
 function isValidCustomRule(rule) {
   return typeof rule?.pattern === "string" && rule.pattern.length <= MAX_PATTERN_LENGTH;
 }
 
+function normalizeRepo(input) {
+  const match = input.trim().match(REPO_INPUT);
+  return match ? `${match[1]}/${match[2]}`.toLowerCase() : null;
+}
+
 async function loadSettings() {
-  const stored = await chrome.storage.sync.get(["disabledRuleIds", "customRules"]);
+  const stored = await chrome.storage.sync.get(["disabledRuleIds", "customRules", "excludedRepos"]);
   return {
     disabledRuleIds: Array.isArray(stored.disabledRuleIds) ? stored.disabledRuleIds : [],
     customRules: Array.isArray(stored.customRules) ? stored.customRules.filter(isValidCustomRule) : [],
+    excludedRepos: Array.isArray(stored.excludedRepos) ? stored.excludedRepos.filter((repo) => typeof repo === "string") : [],
   };
 }
 
