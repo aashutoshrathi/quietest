@@ -16,6 +16,7 @@ let reviewKey = null;
 let scanQueued = false;
 let scanGeneration = 0;
 let hideRules = null;
+let excludedRepos = [];
 let counts = { test: 0, implementation: 0 };
 
 async function sha256Hex(text) {
@@ -33,6 +34,11 @@ function syncReviewKey() {
     setMode(DEFAULT_MODE);
   }
   return key;
+}
+
+function isExcludedRepo() {
+  const repo = location.pathname.split("/").slice(1, 3).join("/").toLowerCase();
+  return excludedRepos.includes(repo);
 }
 
 function currentMode() {
@@ -254,11 +260,15 @@ function renderToggle() {
   }
 }
 
-function stopAfterExtensionUpdate() {
-  observer.disconnect();
+function clearPage() {
   applyMarks(TEST_ATTR, new Set());
   applyMarks(IMPL_ATTR, new Set());
   document.getElementById(TOGGLE_ID)?.remove();
+}
+
+function stopAfterExtensionUpdate() {
+  observer.disconnect();
+  clearPage();
 }
 
 function markFiles(paths, elementsFor, treeItems) {
@@ -288,6 +298,10 @@ async function scan() {
   }
   if (!syncReviewKey()) {
     document.getElementById(TOGGLE_ID)?.remove();
+    return;
+  }
+  if (isExcludedRepo()) {
+    clearPage();
     return;
   }
   const generation = ++scanGeneration;
@@ -323,7 +337,9 @@ function queueScan() {
 }
 
 async function refreshRules() {
-  hideRules = activeRules(await loadSettings());
+  const settings = await loadSettings();
+  hideRules = activeRules(settings);
+  excludedRepos = settings.excludedRepos;
   hiddenByPath.clear();
   scanGeneration += 1;
   queueScan();

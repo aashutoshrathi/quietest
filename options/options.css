@@ -125,6 +125,14 @@ section {
   margin-top: 0;
 }
 
+#excluded-repos li {
+  align-items: center;
+}
+
+#excluded-repos code {
+  flex: 1;
+}
+
 .rule-text {
   display: flex;
   flex-direction: column;
