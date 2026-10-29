@@ -2,9 +2,9 @@
 
 A Chrome extension that hides test files on GitHub pull requests, so you can review the real code. _The quietest diff: tests muted until you ask._
 
-| Tests hidden (default) | Tests shown |
-|---|---|
-| ![Quietest button with tests hidden](docs/tests-hidden.png) | ![Quietest button with tests shown](docs/tests-shown.png) |
+| Show implementation (default) | Show tests | Show both |
+|---|---|---|
+| ![Quietest button with tests hidden](docs/tests-hidden.png) | ![Quietest button showing only tests](docs/tests-only.png) | ![Quietest button with tests shown](docs/tests-shown.png) |
 
 ## Motivation 🤔
 
@@ -33,9 +33,11 @@ Open a PR's **Files changed** tab. Test files are now hidden. This install does 
 ## Features 🌟
 
 - Hides test files, mocks, fixtures, and snapshots in a PR's diff and in its file tree. Folders that hold only hidden files are hidden too.
-- When Quietest hides files on a PR, its button shows at the bottom right of the page. Hover it to see how many files it hid. Click it to show them again; the button then turns into red noise with the count of files. Click again to hide them.
-- Every new PR starts with these files hidden.
-- Choose which paths to hide on the settings page, with your own regex rules or with Chrome's on-device AI.
+- Works on a PR's **Files changed** tab and on individual commit diffs inside a PR.
+- When Quietest hides files on a PR, its button shows at the bottom right of the page with a badge for the hidden file count. Hover it to see how many files it hid.
+- Click the button to open the view menu and switch between **Show implementation** (hides test files, the default), **Show tests** (hides implementation files so you can review tests on their own), and **Show both** (shows every file).
+- Every new PR starts with test files hidden.
+- Choose which paths to hide on the settings page, with your own regex rules or with Chrome's on-device AI, or exclude repositories you want Quietest to leave alone.
 
 ## Settings ⚙️
 
