@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quietest · Less noise. More signal.</title>
+    <meta name="description" content="Mute test files, mocks, and snapshots on GitHub pull requests. A free Chrome extension for a quieter code review.">
+    <meta name="theme-color" content="#0b100e">
+    <link rel="canonical" href="https://quietest.aashutosh.dev/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Quietest · Less noise. More signal.">
+    <meta property="og:description" content="The quietest diff: tests muted until you ask. A free Chrome extension for GitHub pull requests.">
+    <meta property="og:url" content="https://quietest.aashutosh.dev/">
+    <meta property="og:image" content="https://quietest.aashutosh.dev/docs/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="stylesheet" href="assets/landing.css">
+    <script src="assets/landing.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="site-shell" data-testid="LandingPage">
+      <header class="site-header">
+        <a class="wordmark" href="./" aria-label="Quietest home">
+          <img src="icons/icon.svg" width="34" height="34" alt="">
+          <span>quietest<span class="brand-period">.</span></span>
+        </a>
+        <nav aria-label="Main navigation">
+          <a class="nav-detail" href="#demo">Demo</a>
+          <a class="nav-detail" href="https://github.com/aashutoshrathi/quietest#readme">Docs</a>
+          <a class="github-link" href="https://github.com/aashutoshrathi/quietest" aria-label="Star Quietest on GitHub"><img src="assets/icons/github.svg" width="16" height="16" alt=""> Star<span class="github-label">on GitHub</span></a>
+          <a class="nav-cta" href="#get-started">Get started <span aria-hidden="true">↓</span></a>
+        </nav>
+      </header>
+
+      <main id="main">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <a class="eyebrow release-link" href="https://github.com/aashutoshrathi/quietest/releases/latest"><span class="status-dot" aria-hidden="true"></span> LATEST RELEASE · SEE WHAT’S NEW <span aria-hidden="true">↗</span></a>
+            <h1 id="hero-title">Less noise.<br><span>More signal.</span></h1>
+            <p class="hero-description">Your next great code review starts with a quieter diff.</p>
+            <p class="hero-detail">Mute tests, mocks, and snapshots on GitHub. Focus on the implementation, then bring the tests back when you’re ready.</p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#get-started">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="4"/><path d="M12 8h8.6M8.5 14 4.2 6.5M14 15.5 9.7 21"/></svg>
+                Get started <span aria-hidden="true">↓</span>
+              </a>
+              <a class="button button-secondary" href="https://github.com/aashutoshrathi/quietest/releases/latest/download/quietest.zip">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5"/></svg>
+                Download ZIP
+              </a>
+            </div>
+            <p class="hero-note">Free Chrome extension <span>·</span> No account required</p>
+            <div class="hero-links"><a href="#demo">Try the live demo <span aria-hidden="true">↓</span></a><a href="#manual-install">ZIP installation guide <span aria-hidden="true">↓</span></a></div>
+          </div>
+
+          <div class="demo-wrap" id="demo" data-testid="DiffDemo">
+            <div class="demo-window">
+              <div class="window-bar"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>github.com / your next pull request</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4-6 8 6 8m8-16 6 8-6 8"/></svg></div>
+              <div class="pr-heading"><span class="pr-icon" aria-hidden="true">⑂</span><div><strong>A little less complexity</strong><span>Example pull request <b>#128</b></span></div><span class="open-badge">Open</span></div>
+              <div class="files-heading"><span>Files changed <b id="file-count">2</b></span><span class="diff-stats"><span id="added-count">+42</span> <span id="removed-count">−18</span></span></div>
+              <div class="demo-body" tabindex="0" role="region" aria-label="Example pull request diff">
+                <div class="file-tree" aria-label="Example changed files">
+                  <span class="tree-label">CHANGED FILES</span>
+                  <div class="file-row" data-file-kind="implementation"><span aria-hidden="true">◇</span> src/review.ts <b>+24</b></div>
+                  <div class="file-row" data-file-kind="implementation"><span aria-hidden="true">◇</span> src/filter.ts <b>+18</b></div>
+                  <div class="file-row" data-file-kind="tests" hidden><span aria-hidden="true">◇</span> review.test.ts <b>+86</b></div>
+                  <div class="file-row" data-file-kind="tests" hidden><span aria-hidden="true">◇</span> filter.spec.ts <b>+54</b></div>
+                  <div class="file-row" data-file-kind="tests" hidden><span aria-hidden="true">◇</span> __mocks__/api.ts <b>+32</b></div>
+                  <div class="file-row" data-file-kind="tests" hidden><span aria-hidden="true">◇</span> __snapshots__/ui.snap <b>+210</b></div>
+                  <div class="hidden-summary" id="hidden-summary"><span aria-hidden="true">✓</span> 4 test &amp; mock files muted</div>
+                </div>
+                <div class="code-panel" id="implementation-code">
+                  <div class="code-title"><span aria-hidden="true">⌘</span> src/review.ts <span>+24 −12</span></div>
+                  <div class="code-lines" aria-label="Example implementation diff">
+                    <div><span>12</span><code><em>export function</em> review(files) {</code></div>
+                    <div class="line-removed"><span>13</span><code>−  return files;</code></div>
+                    <div class="line-added"><span>13</span><code>+  const signal = files.filter(</code></div>
+                    <div class="line-added"><span>14</span><code>+    file =&gt; !isTest(file)</code></div>
+                    <div class="line-added"><span>15</span><code>+  );</code></div>
+                    <div class="line-added"><span>16</span><code>+  return signal;</code></div>
+                    <div><span>17</span><code>}</code></div>
+                  </div>
+                </div>
+                <div class="code-panel" id="tests-code" hidden>
+                  <div class="code-title"><span aria-hidden="true">⌘</span> review.test.ts <span>+86 −0</span></div>
+                  <div class="code-lines" aria-label="Example test diff">
+                    <div><span>01</span><code><em>import</em> { review } from './review';</code></div>
+                    <div class="line-added"><span>02</span><code>+ it('keeps the signal', () =&gt; {</code></div>
+                    <div class="line-added"><span>03</span><code>+   const files = ['app.ts'];</code></div>
+                    <div class="line-added"><span>04</span><code>+   expect(review(files))</code></div>
+                    <div class="line-added"><span>05</span><code>+     .toEqual(['app.ts']);</code></div>
+                    <div class="line-added"><span>06</span><code>+ });</code></div>
+                    <div><span>07</span><code> </code></div>
+                  </div>
+                </div>
+              </div>
+              <div class="demo-controls">
+                <img src="icons/icon.svg" width="26" height="26" alt="Quietest">
+                <div class="view-switch" role="group" aria-label="Demo file view">
+                  <button type="button" data-view="implementation" aria-pressed="true">Implementation</button>
+                  <button type="button" data-view="tests" aria-pressed="false">Tests</button>
+                  <button type="button" data-view="both" aria-pressed="false">Both</button>
+                </div>
+                <span class="live-dot" aria-hidden="true"></span>
+              </div>
+            </div>
+            <p class="demo-caption"><span aria-hidden="true">↖</span> Try it. Same PR, a little more breathing room.</p>
+            <p class="sr-only" id="demo-status" role="status">Showing 2 implementation files. 4 test and mock files hidden.</p>
+            <noscript><p class="demo-caption">Enable JavaScript to try the view switcher.</p></noscript>
+          </div>
+        </section>
+
+        <section class="benefits" aria-label="Why Quietest">
+          <article><span class="feature-symbol" aria-hidden="true">⌁</span><h2>Find your focus.</h2><p>Tests, mocks, fixtures, snapshots. Out of the way in the diff and the file tree.</p></article>
+          <article><span class="feature-symbol" aria-hidden="true">⇄</span><h2>Change your view.</h2><p>Implementation, tests, or everything. One click, whenever you need it.</p></article>
+          <article><span class="feature-symbol" aria-hidden="true">⌘</span><h2>Make it yours.</h2><p>Add custom rules, exclude repositories, and sync settings with Chrome.</p></article>
+        </section>
+
+        <section class="getting-started" id="get-started" aria-labelledby="start-title">
+          <div class="section-intro"><p class="eyebrow">GET STARTED</p><h2 id="start-title">Your next review, a little quieter.</h2><p>Pick your install. Then open a pull request on GitHub.</p></div>
+          <div class="install-options" data-testid="InstallOptions">
+            <article class="install-option recommended">
+              <div class="install-heading"><h3>Chrome Web Store</h3><span class="recommended-badge">Recommended</span></div>
+              <p>The easiest way to get started. Install once and Chrome handles updates.</p>
+              <a class="button button-primary" href="https://chromewebstore.google.com/detail/jdnknkmpcknkhnelmoofpmdkjijkfmad">Add to Chrome <span aria-hidden="true">↗</span></a>
+              <span class="install-note">Free to install. No account with Quietest.</span>
+            </article>
+            <article class="install-option">
+              <div class="install-heading"><h3>Install it yourself</h3><span class="package-label">.zip</span></div>
+              <p>Get the latest release from GitHub and load it into Chrome or another Chromium browser.</p>
+              <a class="button button-secondary" href="https://github.com/aashutoshrathi/quietest/releases/latest/download/quietest.zip">Download ZIP <span aria-hidden="true">↓</span></a>
+              <div class="install-note"><a href="#manual-install">Installation guide</a><span aria-hidden="true">·</span><a href="https://github.com/aashutoshrathi/quietest/releases/latest">Release notes ↗</a></div>
+            </article>
+          </div>
+          <ol class="steps">
+            <li><span class="step-number">01</span><h3>Add Quietest.</h3><p>Install from the <a href="https://chromewebstore.google.com/detail/jdnknkmpcknkhnelmoofpmdkjijkfmad">Chrome Web Store</a>. No sign-up, no setup ceremony.</p></li>
+            <li><span class="step-number">02</span><h3>Open a pull request.</h3><p>Head to <strong>Files changed</strong> on GitHub. Test files are muted automatically.</p></li>
+            <li><span class="step-number">03</span><h3>Review at your pace.</h3><p>Use the Quietest button to switch views. Your tests are always a click away.</p></li>
+          </ol>
+          <details class="manual-install" id="manual-install">
+            <summary>Prefer to install from a ZIP? <span aria-hidden="true">+</span></summary>
+            <ol>
+              <li><a href="https://github.com/aashutoshrathi/quietest/releases/latest/download/quietest.zip">Download the latest ZIP</a> and unzip it into a folder you’ll keep.</li>
+              <li>Open <code id="extensions-address">chrome://extensions/</code> <button class="copy-address" type="button" data-testid="CopyExtensionsAddress">Copy address</button> in a new tab and turn on <strong>Developer mode</strong>.<span class="copy-status" role="status" id="copy-status"></span></li>
+              <li>Click <strong>Load unpacked</strong> and select the unzipped folder.</li>
+            </ol>
+            <p>ZIP installs do not update automatically. Download the latest release again to update.</p>
+          </details>
+        </section>
+
+        <section class="closing" aria-labelledby="closing-title">
+          <div><p class="eyebrow">YOUR CODE STAYS YOUR CODE.</p><h2 id="closing-title">Quiet by design.<br>Private by default.</h2><p>No analytics. No tracking. Filtering happens in your browser.<br>The source is right there if you want to take a look.</p></div>
+          <a class="button button-primary" href="#get-started">Start your next review <span aria-hidden="true">↑</span></a>
+        </section>
+
+        <section class="community" aria-labelledby="community-title">
+          <img class="github-icon" src="assets/icons/github.svg" width="30" height="30" alt="">
+          <div><h2 id="community-title">Small tool. Public code.</h2><p>Read the source, report a bug, or help make code review quieter.</p></div>
+          <div class="community-links"><a class="button button-secondary" href="https://github.com/aashutoshrathi/quietest">Star on GitHub <span aria-hidden="true">↗</span></a><a href="https://github.com/aashutoshrathi/quietest/issues">Report an issue <span aria-hidden="true">↗</span></a></div>
+        </section>
+      </main>
+
+      <footer class="site-footer"><a class="wordmark" href="./"><img src="icons/icon.svg" width="26" height="26" alt=""><span>quietest.</span></a><p>A little less noise on the internet.</p><div><a href="https://github.com/aashutoshrathi/quietest">GitHub</a><a href="https://github.com/aashutoshrathi/quietest/releases">Releases</a><a href="https://github.com/aashutoshrathi/quietest#settings">Docs</a><a href="privacy-policy.html">Privacy</a></div></footer>
+    </div>
+  </body>
+</html>
