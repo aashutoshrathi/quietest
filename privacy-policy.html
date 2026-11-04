@@ -4,79 +4,139 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quietest | Privacy Policy</title>
+    <meta name="description" content="How Quietest handles your data, browser settings, permissions, and on-device AI.">
+    <meta name="theme-color" content="#0b100e">
+    <link rel="canonical" href="https://quietest.aashutosh.dev/privacy-policy.html">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="stylesheet" href="assets/landing.css">
+    <link rel="stylesheet" href="assets/privacy.css">
   </head>
   <body>
-    <h2>Privacy Policy</h2>
-    <p>Last updated: October 29, 2026</p>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="site-shell" data-testid="PrivacyPage">
+      <header class="site-header">
+        <a class="wordmark" href="./" aria-label="Quietest home">
+          <img src="icons/icon.svg" width="34" height="34" alt="">
+          <span>quietest<span class="brand-period">.</span></span>
+        </a>
+        <nav aria-label="Main navigation">
+          <a class="nav-detail" href="./#demo">Demo</a>
+          <a class="nav-detail" href="https://github.com/aashutoshrathi/quietest#readme">Docs</a>
+          <a class="github-link" href="https://github.com/aashutoshrathi/quietest" aria-label="Star Quietest on GitHub"><img src="assets/icons/github.svg" width="16" height="16" alt=""> Star<span class="github-label">on GitHub</span></a>
+          <a class="nav-cta" href="./#get-started">Get started <span aria-hidden="true">↓</span></a>
+        </nav>
+      </header>
+      <main id="main" class="policy-page">
+        <header class="policy-heading">
+          <a class="back-link" href="./"><span aria-hidden="true">←</span> Back to home</a>
+          <p class="eyebrow">YOUR PRIVACY</p>
+          <h1>Privacy policy<span>.</span></h1>
+          <p class="policy-date">Last updated: <time datetime="2026-10-29">October 29, 2026</time></p>
+        </header>
+        <div class="policy-layout">
+          <aside class="policy-sidebar">
+            <h2 id="contents-title">On this page</h2>
+            <nav class="policy-toc" aria-labelledby="contents-title">
+              <a href="#data-collection">Data Collection and Usage</a>
+              <a href="#browser-settings">Data Stored in Your Browser</a>
+              <a href="#permissions">Permissions</a>
+              <a href="#on-device-ai">On-Device AI</a>
+              <a href="#third-party-services">Third-Party Services</a>
+              <a href="#security">Security</a>
+              <a href="#policy-changes">Changes to This Policy</a>
+              <a href="#contact">Contact Us</a>
+            </nav>
+          </aside>
+          <article class="policy-content" aria-label="Privacy policy details">
+            <p>
+              This Privacy Policy explains how "Quietest" handles your data when you use
+              our Chrome extension.
+            </p>
 
-    <p>
-      This Privacy Policy explains how "Quietest" handles your data when you use
-      our Chrome extension.
-    </p>
+            <section id="data-collection" aria-labelledby="data-collection-title">
+              <h2 id="data-collection-title">Data Collection and Usage</h2>
+              <p>
+                The "Quietest" extension does not collect, store on any server, or share any
+                personal data, browsing history, or any other user-related information. It
+                works entirely inside your browser.
+              </p>
+            </section>
 
-    <h3>Data Collection and Usage</h3>
-    <p>
-      The "Quietest" extension does not collect, store on any server, or share any
-      personal data, browsing history, or any other user-related information. It
-      works entirely inside your browser.
-    </p>
+            <section id="browser-settings" aria-labelledby="browser-settings-title">
+              <h2 id="browser-settings-title">Data Stored in Your Browser</h2>
+              <p>
+                Quietest saves your settings: which built-in rules are turned on, the
+                regex rules you add, and the repositories you exclude. They are saved with
+                Chrome's storage, so Chrome can sync them across your own devices when
+                Chrome sync is on. Quietest never sends them anywhere else.
+              </p>
+            </section>
 
-    <h3>Data Stored in Your Browser</h3>
-    <p>
-      Quietest saves your settings: which built-in rules are turned on, the
-      regex rules you add, and the repositories you exclude. They are saved with
-      Chrome's storage, so Chrome can sync them across your own devices when
-      Chrome sync is on. Quietest never sends them anywhere else.
-    </p>
+            <section id="permissions" aria-labelledby="permissions-title">
+              <h2 id="permissions-title">Permissions</h2>
+              <p>
+                The extension requires minimal permissions to function correctly:
+              </p>
+              <ul>
+                <li>
+                  <strong>Access to GitHub pages:</strong> This is necessary to read the file
+                  paths on pull request pages and hide the files that match your rules. The
+                  file paths are checked in your browser and are not stored or transmitted.
+                </li>
+                <li>
+                  <strong>Storage:</strong> Used to save your rule settings, as described
+                  above.
+                </li>
+              </ul>
+            </section>
 
-    <h3>Permissions</h3>
-    <p>
-      The extension requires minimal permissions to function correctly:
-    </p>
-    <ul>
-      <li>
-        <strong>Access to GitHub pages:</strong> This is necessary to read the file
-        paths on pull request pages and hide the files that match your rules. The
-        file paths are checked in your browser and are not stored or transmitted.
-      </li>
-      <li>
-        <strong>Storage:</strong> Used to save your rule settings, as described
-        above.
-      </li>
-    </ul>
+            <section id="on-device-ai" aria-labelledby="on-device-ai-title">
+              <h2 id="on-device-ai-title">On-Device AI</h2>
+              <p>
+                If you use "Write a rule with AI", Quietest sends your description to
+                Chrome's built-in AI model (Gemini Nano), which runs on your computer. What
+                you type is processed on your device and is not sent to us or to any
+                server. Chrome may download the AI model from Google the first time you use
+                it, as described in Chrome's own documentation.
+              </p>
+            </section>
 
-    <h3>On-Device AI</h3>
-    <p>
-      If you use "Write a rule with AI", Quietest sends your description to
-      Chrome's built-in AI model (Gemini Nano), which runs on your computer. What
-      you type is processed on your device and is not sent to us or to any
-      server. Chrome may download the AI model from Google the first time you use
-      it, as described in Chrome's own documentation.
-    </p>
+            <section id="third-party-services" aria-labelledby="third-party-services-title">
+              <h2 id="third-party-services-title">Third-Party Services</h2>
+              <p>
+                This extension does not integrate with third-party services, analytics, or
+                tracking tools. Its fonts and icons are included in the extension, so it
+                makes no network requests of its own.
+              </p>
+            </section>
 
-    <h3>Third-Party Services</h3>
-    <p>
-      This extension does not integrate with third-party services, analytics, or
-      tracking tools. Its fonts and icons are included in the extension, so it
-      makes no network requests of its own.
-    </p>
+            <section id="security" aria-labelledby="security-title">
+              <h2 id="security-title">Security</h2>
+              <p>
+                Since "Quietest" does not store or transmit user data, there are no security
+                risks related to personal data exposure.
+              </p>
+            </section>
 
-    <h3>Security</h3>
-    <p>
-      Since "Quietest" does not store or transmit user data, there are no security
-      risks related to personal data exposure.
-    </p>
+            <section id="policy-changes" aria-labelledby="policy-changes-title">
+              <h2 id="policy-changes-title">Changes to This Policy</h2>
+              <p>
+                We may update this Privacy Policy from time to time. Any changes will be
+                posted on this page.
+              </p>
+            </section>
 
-    <h3>Changes to This Policy</h3>
-    <p>
-      We may update this Privacy Policy from time to time. Any changes will be
-      posted on this page.
-    </p>
-
-    <h3>Contact Us</h3>
-    <p>
-      If you have any questions about this Privacy Policy, please open an issue at:
-      <a href="https://github.com/aashutoshrathi/quietest/issues">github.com/aashutoshrathi/quietest/issues</a>.
-    </p>
+            <section id="contact" aria-labelledby="contact-title">
+              <h2 id="contact-title">Contact Us</h2>
+              <p>
+                If you have any questions about this Privacy Policy, please open an issue at:
+                <a href="https://github.com/aashutoshrathi/quietest/issues">github.com/aashutoshrathi/quietest/issues</a>.
+              </p>
+            </section>
+          </article>
+        </div>
+      </main>
+      <footer class="site-footer"><a class="wordmark" href="./"><img src="icons/icon.svg" width="26" height="26" alt=""><span>quietest.</span></a><p>A little less noise on the internet.</p><div><a href="https://github.com/aashutoshrathi/quietest">GitHub</a><a href="https://github.com/aashutoshrathi/quietest/releases">Releases</a><a href="https://github.com/aashutoshrathi/quietest#settings">Docs</a><a href="privacy-policy.html" aria-current="page">Privacy</a></div></footer>
+    </div>
   </body>
 </html>
