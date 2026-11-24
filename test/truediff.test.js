@@ -5,8 +5,8 @@ const test = require("node:test");
 const vm = require("node:vm");
 
 const source = fs.readFileSync(path.join(__dirname, "../src/truediff.js"), "utf8");
-const { parseUnifiedDiff, trueDiffFile, tokenize, myersMatches, diffUrlFor } = vm.runInNewContext(
-  `${source}; ({ parseUnifiedDiff, trueDiffFile, tokenize, myersMatches, diffUrlFor })`,
+const { parseUnifiedDiff, trueDiffFile, mutedLineAnchors, tokenize, myersMatches, diffUrlFor } = vm.runInNewContext(
+  `${source}; ({ parseUnifiedDiff, trueDiffFile, mutedLineAnchors, tokenize, myersMatches, diffUrlFor })`,
 );
 
 const plain = (value) => JSON.parse(JSON.stringify(value));
@@ -152,4 +152,26 @@ test("blank lines are neither real nor formatting-only changes", () => {
   assert.equal(file.realChangedLines, 1);
   assert.equal(file.formattingLines, 0);
   assert.equal(file.githubChangedLines, 2);
+});
+
+test("mutes only lines whose change is whitespace or line breaks", () => {
+  const file = diffOf("@@ -1,3 +1,2 @@\n-foo(a,\n-  b);\n+foo(a, b);\n bar();\n");
+  same(mutedLineAnchors(file, "h").sort(), ["diff-hL1", "diff-hL2", "diff-hR1"]);
+});
+
+test("does not mute a line with a real token change", () => {
+  const file = diffOf("@@ -1 +1 @@\n-foo(a,  b);\n+foo(a, c);\n");
+  same(mutedLineAnchors(file, "h"), []);
+});
+
+test("mutes added and removed blank lines", () => {
+  const file = diffOf("@@ -1,2 +1,3 @@\n a();\n+\n b();\n");
+  same(mutedLineAnchors(file, "h"), ["diff-hR2"]);
+});
+
+test("mutes nothing in a hunk too large for a token diff", () => {
+  const big = Array.from({ length: 20001 }, (_, i) => `x${i}`).join(" ");
+  const file = diffOf(`@@ -1 +1 @@\n-${big}\n+${big} \n`);
+  assert.equal(file.hunks[0].exact, false);
+  same(mutedLineAnchors(file, "h"), []);
 });

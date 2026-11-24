@@ -279,6 +279,20 @@ function trueDiffFile(file) {
   return { ...file, hunks, githubChangedLines, realChangedLines, formattingLines, changedTokens, formattingOnly };
 }
 
+function mutedLineAnchors(diffedFile, hash) {
+  const anchors = [];
+  for (const hunk of diffedFile.hunks) {
+    for (const row of hunk.rows) {
+      for (const [side, line] of [["L", row.old], ["R", row.new]]) {
+        if (line && line.githubChanged && !lineHasRealChange(line)) {
+          anchors.push(`diff-${hash}${side}${line.number}`);
+        }
+      }
+    }
+  }
+  return anchors;
+}
+
 // The .diff URL for a PR review page, or for a single commit inside a PR.
 function diffUrlFor(pathname) {
   const commit = pathname.match(/^\/([^/]+)\/([^/]+)\/pull\/\d+\/(?:commits|changes)\/([0-9a-f]{7,40})(?:[/?#]|$)/);

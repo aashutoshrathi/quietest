@@ -50,6 +50,13 @@ GitHub compares lines, so reindenting a block, wrapping a long call, or joining 
 - Click a file name to jump to that file in GitHub's diff. Press Esc to close.
 - It runs in your browser. Quietest fetches the PR's `.diff` from GitHub with your GitHub session and sends it nowhere else.
 
+### Mute formatting changes in GitHub's diff
+
+- Click **Mute formatting changes** in the Quietest menu. Lines that only moved whitespace or line breaks turn grey in GitHub's own diff, and files whose whole change is formatting get a **Formatting only** label. Real changes keep GitHub's colors.
+- It applies to the PR you have open. To start every PR muted, turn on **Mute formatting changes on every PR** on the settings page.
+- It works in GitHub's new and classic **Files changed** views, and on commit pages inside a PR.
+- The first time you open a PR after you update, Quietest shows a short tip by its button. Click **Turn on** to mute every PR, or **Not now**. It does not show again.
+
 The true diff works on the diff GitHub serves, so it compares the changed hunks, not whole files. It uses a tokenizer that works for any language, not difftastic's per-language parsers, so it doesn't understand syntax: a change that moves code between hunks shows as a deletion and an addition. Very large hunks fall back to GitHub's line diff, and PRs whose diff is over 20 MB show a message instead.
 
 ## Settings ⚙️

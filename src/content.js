@@ -1,5 +1,7 @@
 const TEST_ATTR = "data-quietest-test";
 const IMPL_ATTR = "data-quietest-impl";
+const MUTED_ATTR = "data-quietest-muted";
+const FORMATTING_ATTR = "data-quietest-formatting-only";
 const REVIEW_PATH = /^(\/[^/]+\/[^/]+\/pull\/\d+)\/(files|changes|commits\/)/;
 const DIFF_HREF = /#diff-([0-9a-f]{64})$/;
 const TOGGLE_ID = "quietest-toggle";
@@ -21,6 +23,10 @@ let hideRules = null;
 let excludedRepos = [];
 let counts = { test: 0, implementation: 0 };
 let diffCache = null;
+let muteFormatting = false;
+let muteDefault;
+let muteData = null;
+let introSeen;
 
 async function sha256Hex(text) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -36,6 +42,8 @@ function syncReviewKey() {
     hiddenByPath.clear();
     closeTrueDiff();
     diffCache = null;
+    muteFormatting = muteDefault;
+    muteData = null;
     setMode(DEFAULT_MODE);
   }
   return key;
@@ -185,6 +193,11 @@ function createToggle() {
         <span class="quietest-toggle__label">Open true diff</span>
         <span class="quietest-toggle__hint">Mutes formatting-only changes</span>
       </button>
+      <button type="button" role="menuitemcheckbox" class="quietest-toggle__item" data-action="mute-formatting" aria-checked="false">
+        <span class="quietest-toggle__check" aria-hidden="true"></span>
+        <span class="quietest-toggle__label">Mute formatting changes</span>
+        <span class="quietest-toggle__hint"></span>
+      </button>
     </div>
     <button type="button" class="quietest-toggle__button" data-testid="quietest-toggle" aria-haspopup="menu" aria-expanded="false">
       <svg class="quietest-toggle__quiet" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -220,6 +233,9 @@ function createToggle() {
   root.querySelector('[data-action="true-diff"]').addEventListener("click", () => {
     setMenuOpen(root, false);
     openTrueDiff();
+  });
+  root.querySelector('[data-action="mute-formatting"]').addEventListener("click", () => {
+    setMuteFormatting(!muteFormatting);
   });
   for (const item of root.querySelectorAll(".quietest-toggle__item[data-mode]")) {
     item.addEventListener("click", () => {
@@ -278,6 +294,9 @@ function renderToggle() {
       hintEl.textContent = hint;
     }
   }
+
+  renderMuteItem(root);
+  renderIntro(root);
 }
 
 // ---- True diff viewer ----
@@ -543,9 +562,195 @@ async function openTrueDiff({ reuse = false } = {}) {
   }
 }
 
+function setMuteFormatting(on) {
+  muteFormatting = on;
+  renderToggle();
+  queueScan();
+}
+
+function muteHint() {
+  if (!muteFormatting || !muteData) {
+    return "Greys lines that only move whitespace";
+  }
+  if (muteData.loading) {
+    return "Loading the diff…";
+  }
+  if (muteData.error) {
+    return muteData.error;
+  }
+  return `${plural(muteData.lineCount, "line")} muted`;
+}
+
+function renderMuteItem(root) {
+  const item = root.querySelector('[data-action="mute-formatting"]');
+  item.setAttribute("aria-checked", String(muteFormatting));
+  const hint = muteHint();
+  const hintEl = item.querySelector(".quietest-toggle__hint");
+  if (hintEl.textContent !== hint) {
+    hintEl.textContent = hint;
+  }
+}
+
+function createIntro() {
+  const turnOn = el("button", "quietest-intro__button quietest-intro__button--primary", "Turn on");
+  turnOn.type = "button";
+  turnOn.addEventListener("click", () => {
+    introSeen = true;
+    chrome.storage.sync.set({ muteFormattingByDefault: true, trueDiffIntroSeen: true });
+    setMuteFormatting(true);
+  });
+  const dismiss = el("button", "quietest-intro__button", "Not now");
+  dismiss.type = "button";
+  dismiss.addEventListener("click", () => {
+    introSeen = true;
+    chrome.storage.sync.set({ trueDiffIntroSeen: true });
+    renderToggle();
+  });
+  const actions = el("div", "quietest-intro__actions");
+  actions.append(turnOn, dismiss);
+
+  const intro = el("div", "quietest-intro");
+  intro.setAttribute("role", "dialog");
+  intro.setAttribute("aria-label", "New True Diff View");
+  intro.setAttribute("data-testid", "quietest-intro");
+  intro.append(
+    el("strong", "quietest-intro__title", "New: True Diff View by Quietest"),
+    el(
+      "p",
+      "quietest-intro__text",
+      "Grey out lines that only move whitespace or line breaks, right in this diff. Open true diff in this menu shows a side-by-side view. You can change this in Quietest's settings.",
+    ),
+    actions,
+  );
+  return intro;
+}
+
+function renderIntro(root) {
+  const intro = root.querySelector(".quietest-intro");
+  const wanted = !introSeen && !muteDefault;
+  if (wanted && !intro) {
+    root.querySelector(".quietest-toggle__button").before(createIntro());
+  } else if (!wanted && intro) {
+    intro.remove();
+  }
+}
+
+async function computeMuteData(url) {
+  const text = diffCache?.url === url ? diffCache.text : await fetchDiff(url);
+  diffCache = { url, text };
+  const files = parseUnifiedDiff(text);
+  const hashes = await Promise.all(
+    files.map((file) => sha256Hex(file.status === "deleted" ? file.oldPath : file.newPath)),
+  );
+  const anchors = new Set();
+  const formattingOnlyHashes = new Set();
+  for (const [index, file] of files.entries()) {
+    if (diffUrlFor(location.pathname) !== url) {
+      return null;
+    }
+    const diffed = trueDiffFile(file);
+    for (const anchor of mutedLineAnchors(diffed, hashes[index])) {
+      anchors.add(anchor);
+    }
+    if (diffed.formattingOnly) {
+      formattingOnlyHashes.add(hashes[index]);
+    }
+    if (index % 5 === 4) {
+      await new Promise((resolve) => setTimeout(resolve));
+    }
+  }
+  return { url, anchors, formattingOnlyHashes, lineCount: anchors.size };
+}
+
+async function loadMuteData(url) {
+  if (muteData?.url === url) {
+    return;
+  }
+  const pending = { url, loading: true };
+  muteData = pending;
+  renderToggle();
+  let result;
+  try {
+    result = await computeMuteData(url);
+  } catch (error) {
+    result = { url, error: error.message };
+  }
+  if (muteData !== pending) {
+    return;
+  }
+  muteData = result && diffUrlFor(location.pathname) === url ? result : null;
+  renderToggle();
+  queueScan();
+}
+
+function clearMutes() {
+  applyMarks(MUTED_ATTR, new Set());
+  applyMarks(FORMATTING_ATTR, new Set());
+}
+
+function newUiMutedTargets(anchors) {
+  const targets = new Set();
+  for (const cell of document.querySelectorAll("[data-line-anchor]")) {
+    if (!anchors.has(cell.dataset.lineAnchor)) {
+      continue;
+    }
+    const row = cell.closest("tr");
+    if (row.querySelectorAll('[data-diff-cell="text"]').length === 1) {
+      targets.add(row);
+    } else {
+      for (const sibling of row.children) {
+        if (sibling.dataset.diffSide === cell.dataset.diffSide) {
+          targets.add(sibling);
+        }
+      }
+    }
+  }
+  return targets;
+}
+
+function classicMutedTargets(anchors) {
+  const targets = new Set();
+  for (const cell of document.querySelectorAll('td.blob-num[id^="diff-"]')) {
+    if (!anchors.has(cell.id)) {
+      continue;
+    }
+    const row = cell.closest("tr");
+    if (row.querySelectorAll(".blob-code").length === 1) {
+      targets.add(row);
+    } else {
+      targets.add(cell);
+      targets.add(cell.nextElementSibling);
+    }
+  }
+  return targets;
+}
+
+function formattingOnlyLabels(hashes) {
+  const labels = new Set();
+  for (const hash of hashes) {
+    const file = document.getElementById(`diff-${hash}`);
+    const labelId = file?.getAttribute("aria-labelledby");
+    const label = labelId ? document.getElementById(labelId)?.parentElement : file?.querySelector(".file-header .file-info");
+    if (label) {
+      labels.add(label);
+    }
+  }
+  return labels;
+}
+
+function applyMutes() {
+  if (!muteFormatting || !muteData?.anchors) {
+    clearMutes();
+    return;
+  }
+  applyMarks(MUTED_ATTR, new Set([...newUiMutedTargets(muteData.anchors), ...classicMutedTargets(muteData.anchors)]));
+  applyMarks(FORMATTING_ATTR, formattingOnlyLabels(muteData.formattingOnlyHashes));
+}
+
 function clearPage() {
   applyMarks(TEST_ATTR, new Set());
   applyMarks(IMPL_ATTR, new Set());
+  clearMutes();
   closeTrueDiff();
   document.getElementById(TOGGLE_ID)?.remove();
 }
@@ -582,6 +787,7 @@ async function scan() {
   }
   if (!syncReviewKey()) {
     closeTrueDiff();
+    clearMutes();
     document.getElementById(TOGGLE_ID)?.remove();
     return;
   }
@@ -611,6 +817,10 @@ async function scan() {
   applyMarks(IMPL_ATTR, implementation.marked);
   counts = { test: tests.count, implementation: implementation.count };
   renderToggle();
+  if (muteFormatting) {
+    loadMuteData(diffUrlFor(location.pathname));
+  }
+  applyMutes();
 }
 
 function queueScan() {
@@ -623,8 +833,11 @@ function queueScan() {
 
 async function refreshRules() {
   const settings = await loadSettings();
+  const stored = await chrome.storage.sync.get("trueDiffIntroSeen");
   hideRules = activeRules(settings);
   excludedRepos = settings.excludedRepos;
+  muteDefault = settings.muteFormattingByDefault;
+  introSeen = stored.trueDiffIntroSeen === true;
   hiddenByPath.clear();
   scanGeneration += 1;
   queueScan();
