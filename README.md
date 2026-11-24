@@ -73,10 +73,11 @@ Quietest does not collect or send any data. Your rules stay in your browser. The
 ### Development 🛠️
 
 1. Download or clone this repository to your local machine
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" by toggling the switch in the top right corner
-4. Click "Load unpacked" and select the directory containing the extension files
-5. The extension should now be installed and active
+2. Run `npm run build`. It copies the extension files into `dist/`. Chrome can't load the repository root, because the site's `_includes` folder starts with `_`
+3. Open Chrome and navigate to `chrome://extensions/`
+4. Enable "Developer mode" by toggling the switch in the top right corner
+5. Click "Load unpacked" and select the `dist` folder
+6. After a change, run `npm run build` again and click reload on the Quietest card
 
 Run the tests with `npm test`.
 
