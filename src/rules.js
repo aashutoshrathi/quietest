@@ -52,11 +52,12 @@ function normalizeRepo(input) {
 }
 
 async function loadSettings() {
-  const stored = await chrome.storage.sync.get(["disabledRuleIds", "customRules", "excludedRepos"]);
+  const stored = await chrome.storage.sync.get(["disabledRuleIds", "customRules", "excludedRepos", "muteFormattingByDefault"]);
   return {
     disabledRuleIds: Array.isArray(stored.disabledRuleIds) ? stored.disabledRuleIds : [],
     customRules: Array.isArray(stored.customRules) ? stored.customRules.filter(isValidCustomRule) : [],
     excludedRepos: Array.isArray(stored.excludedRepos) ? stored.excludedRepos.filter((repo) => typeof repo === "string") : [],
+    muteFormattingByDefault: stored.muteFormattingByDefault === true,
   };
 }
 

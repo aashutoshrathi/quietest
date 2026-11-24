@@ -74,6 +74,15 @@
         <p id="add-repo-error" class="error" hidden></p>
       </section>
 
+      <section data-testid="quietest-true-diff-settings">
+        <h2>True diff</h2>
+        <label class="checkbox-row">
+          <input type="checkbox" id="mute-by-default">
+          Mute formatting changes on every PR
+        </label>
+        <p class="hint">Lines that only move whitespace or line breaks turn grey in GitHub's diff. You can still change it for one PR from the Quietest menu.</p>
+      </section>
+
       <section data-testid="quietest-path-tester">
         <h2>Test a path</h2>
         <input id="test-path" placeholder="src/components/Button.test.tsx" spellcheck="false" autocomplete="off" aria-label="File path to test">

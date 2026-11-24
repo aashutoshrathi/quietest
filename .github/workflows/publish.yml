@@ -40,9 +40,8 @@ jobs:
 
       - name: Build package
         run: |
-          zip -r quietest.zip \
-            manifest.json src options icons \
-            -x '*.DS_Store'
+          npm run build
+          cd dist && zip -r ../quietest.zip .
 
       - name: Attach ZIP to the release
         env:

@@ -91,6 +91,19 @@ test("loads broken stored settings as empty", async () => {
   assert.deepEqual([...settings.excludedRepos], ["owner/repo"]);
 });
 
+test("loads the mute formatting default and leaves the intro flag out", async () => {
+  const source = fs.readFileSync(path.join(__dirname, "../src/rules.js"), "utf8");
+  const settingsFor = async (stored) => {
+    const chrome = { storage: { sync: { get: async () => stored } } };
+    const { loadSettings } = vm.runInNewContext(`${source}; ({ loadSettings })`, { chrome });
+    return loadSettings();
+  };
+  assert.equal((await settingsFor({})).muteFormattingByDefault, false);
+  const settings = await settingsFor({ muteFormattingByDefault: true, trueDiffIntroSeen: true });
+  assert.equal(settings.muteFormattingByDefault, true);
+  assert.equal("trueDiffIntroSeen" in settings, false);
+});
+
 test("reads a repository from owner/repo or a GitHub URL", () => {
   assert.equal(normalizeRepo(" Owner/Repo "), "owner/repo");
   assert.equal(normalizeRepo("owner/my.repo-name"), "owner/my.repo-name");

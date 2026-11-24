@@ -11,6 +11,7 @@ const excludedList = document.getElementById("excluded-repos");
 const addRepoForm = document.getElementById("add-repo");
 const repoInput = document.getElementById("new-repo");
 const addRepoError = document.getElementById("add-repo-error");
+const muteByDefaultInput = document.getElementById("mute-by-default");
 
 const REGEX_TIME_LIMIT_MS = 250;
 const SLOW_REGEX_SAMPLES = [..."abcdefghijklmnopqrstuvwxyz0123456789/._-"]
@@ -177,6 +178,8 @@ function render() {
   excludedList.replaceChildren(...settings.excludedRepos.map(repoItem));
   excludedList.hidden = settings.excludedRepos.length === 0;
 
+  muteByDefaultInput.checked = settings.muteFormattingByDefault;
+
   renderTestResult();
 }
 
@@ -235,6 +238,10 @@ addRepoForm.addEventListener("submit", (event) => {
 
 repoInput.addEventListener("input", () => {
   addRepoError.hidden = true;
+});
+
+muteByDefaultInput.addEventListener("change", () => {
+  save({ ...settings, muteFormattingByDefault: muteByDefaultInput.checked });
 });
 
 testInput.addEventListener("input", renderTestResult);

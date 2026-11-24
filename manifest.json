@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Quietest",
-  "version": "0.1.2",
-  "description": "Hides test and non-important files on GitHub pull request diffs",
+  "version": "0.2.0",
+  "description": "Hides test files on GitHub pull requests and shows a true, formatting-aware diff",
   "icons": {
     "16": "icons/16.png",
     "32": "icons/32.png",
@@ -11,6 +11,10 @@
   },
   "permissions": [
     "storage"
+  ],
+  "host_permissions": [
+    "https://github.com/*",
+    "https://patch-diff.githubusercontent.com/*"
   ],
   "action": {
     "default_title": "Quietest settings",
@@ -33,6 +37,7 @@
       ],
       "js": [
         "src/rules.js",
+        "src/truediff.js",
         "src/content.js"
       ],
       "css": [
